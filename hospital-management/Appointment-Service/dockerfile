@@ -8,4 +8,5 @@ WORKDIR /app
 COPY . /app
 
 # Start the application
+
 CMD ["java", "-jar", "/app/appointment-service.jar"]
