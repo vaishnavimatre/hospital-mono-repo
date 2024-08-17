@@ -1,52 +1,107 @@
-name: Java CI with Maven
+name: Build and Push Docker Images
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - hospital-management/**
 
 jobs:
-  api-gateway-pre-commit-scan:
+  build-push-appointment-service:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup Java 21 with Temurin
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "21"
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: GitLeaks Scan
-        uses: zricethezav/gitleaks-action@v1.3.0
-        with:
-          args: --path=.
-
-      - name: OSS Index Scan
-        run: |
-          cd hospital-management/api-gateway
-          mvn ossindex:audit
-        continue-on-error: true
-
-      - name: OWASP Scan
-        if: false
-        run: |
-          cd hospital-management/api-gateway
-          mvn org.owasp:dependency-check-maven:check
-
-      - name: Build code and create Docker image
-        run: |
-          cd hospital-management/api-gateway
-          mvn clean install
-          docker build --build-arg imageName=api-gateway -t ${{ secrets.DOCKER_REGISTRY_USER }}/api-gateway:latest -f dockerfile .
-
-      - name: Log in to Docker Registry
+      - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_REGISTRY_USER }}
           password: ${{ secrets.DOCKER_REGISTRY_PAT }}
 
-      - name: Push Docker image
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_REGISTRY_USER }}/Appointment-Service:latest -f dockerfile .
+        working-directory: hospital-management/Appointment-Service
+
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_REGISTRY_USER }}/Appointment-Service:latest
+          
+  build-push-case-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PAT }}
+
+      - name: Build Docker Image for case-service
+        run: docker build -t ${{ secrets.DOCKER_REGISTRY_USER }}/Case-Service:latest -f dockerfile .
+        working-directory: hospital-management/Case-Service
+
+      - name: Push Docker Image for case-service
+        run: docker push ${{ secrets.DOCKER_REGISTRY_USER }}/Case-Service:latest
+          
+  build-push-directory-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PAT }}
+
+      - name: Build Docker Image for directory-service
+        run: docker build -t ${{ secrets.DOCKER_REGISTRY_USER }}/Directory-Service:latest -f dockerfile .
+        working-directory: hospital-management/Directory-Service
+
+      - name: Push Docker Image for directory-service
+        run: docker push ${{ secrets.DOCKER_REGISTRY_USER }}/Directory-Service:latest
+          
+  build-push-api-gateway:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PAT }}
+
+      - name: Build Docker Image for api-gateway
+        run: docker build -t ${{ secrets.DOCKER_REGISTRY_USER }}/api-gateway:latest -f dockerfile .
+        working-directory: hospital-management/api-gateway
+
+      - name: Push Docker Image for api-gateway
         run: docker push ${{ secrets.DOCKER_REGISTRY_USER }}/api-gateway:latest
+          
+  build-push-patient-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PAT }}
+
+      - name: Build Docker Image for patient-service
+        run: docker build -t ${{ secrets.DOCKER_REGISTRY_USER }}/Patient-Service:latest -f dockerfile .
+        working-directory: hospital-management/Patient-Service
+
+      - name: Push Docker Image for patient-service
+        run: docker push ${{ secrets.DOCKER_REGISTRY_USER }}/Patient-Service:latest
