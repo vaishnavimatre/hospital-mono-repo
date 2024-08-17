@@ -23,6 +23,7 @@ jobs:
         run: docker build -t ${{ secrets.DOCKER_REGISTRY_USER }}/Appointment-Service:latest -f dockerfile .
         working-directory: hospital-management/Appointment-Service
 
+
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_REGISTRY_USER }}/Appointment-Service:latest
           
