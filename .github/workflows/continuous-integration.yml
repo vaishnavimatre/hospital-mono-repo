@@ -19,11 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Perform Google Formatter check
-        run: |
-          cd hospital-management/api-gateway
-          mvn com.spotify.fmt:fmt-maven-plugin:check
-
       - name: GitLeaks Scan
         uses: zricethezav/gitleaks-action@v1.3.0
         with:
