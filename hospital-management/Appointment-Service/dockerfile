@@ -10,4 +10,4 @@ COPY . /app
 
 # Start the application
 
-CMD ["java", "-jar", "/app/Appointment-Service.jar"]
+CMD ["java", "-jar", "/app/appointment-service.jar"]
