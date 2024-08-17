@@ -10,3 +10,5 @@ COPY . /app
 
 # Start the application
 CMD ["java", "-jar", "/app/api-gateway.jar"]
+
+
